@@ -1,6 +1,8 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash } from "react-icons/fi";
+import { server } from "../main";
 
 const BurnBarrel = ({ setCards }) => {
   const [active, setActive] = useState(false);
@@ -14,10 +16,15 @@ const BurnBarrel = ({ setCards }) => {
     setActive(false);
   };
 
-  const handleDragEnd = (e) => {
+  const handleDragEnd = async (e) => {
     const cardId = e.dataTransfer.getData("cardId");
 
-    setCards((pv) => pv.filter((c) => c.id !== cardId));
+    try {
+      await axios.delete(`${server}/tasks/deleteTask/${cardId}`);
+      setCards((prev) => prev.filter((c) => c._id !== cardId));
+    } catch (error) {
+      console.error("Error deleting card", error);
+    }
 
     setActive(false);
   };

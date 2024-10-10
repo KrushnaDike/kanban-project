@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 // importing compoentns
 import BurnBarrel from "./BurnBarrel";
@@ -6,9 +7,23 @@ import Column from "./Column";
 
 // importing data
 import DEFAULT_CARDS from "./data";
+import { server } from "../main";
 
 const Board = () => {
-  const [cards, setCards] = useState(DEFAULT_CARDS);
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const response = await axios.get(`${server}/tasks/getAllTasks`);
+        setCards(response.data.tasks);
+      } catch (error) {
+        console.error("Error fetching cards", error);
+      }
+    };
+
+    fetchCards();
+  }, []);
 
   return (
     <div className="flex h-full w-full gap-3 overflow-scroll p-12">

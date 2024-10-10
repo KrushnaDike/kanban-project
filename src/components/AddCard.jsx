@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 // importing icons
 import { FiPlus } from "react-icons/fi";
+import { server } from "../main";
 
 const AddCard = ({ column, setCards }) => {
   const [text, setText] = useState("");
   const [adding, setAdding] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!text.trim().length) return;
@@ -16,10 +18,14 @@ const AddCard = ({ column, setCards }) => {
     const newCard = {
       column,
       title: text.trim(),
-      id: Math.random().toString(),
     };
 
-    setCards((pv) => [...pv, newCard]);
+    try {
+      const response = await axios.post(`${server}/tasks/addNewTask`, newCard);
+      setCards((prev) => [...prev, response.data.savedCard]);
+    } catch (error) {
+      console.error("Error adding card", error);
+    }
 
     setAdding(false);
   };
